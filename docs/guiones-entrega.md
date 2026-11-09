@@ -97,3 +97,16 @@
   - 100% de cobertura de los casos de la rúbrica y casos borde.
   - Idempotencia de semillas y reversión atómica de transacciones.
 
+---
+
+## 3. Consideraciones Analíticas y Parámetros de Entrega (Quiz #2)
+
+### Distinción Financiera: Ahorro de la Demo vs. Fuga Estimada (Parte A)
+- **Ahorro de la Demo (Parte B — ₡63 000):** Beneficio directo obtenido al consolidar 200 sacos de cemento gris a ₡6 300 (Subtotal: ₡1 260 000) y aplicar la promoción ganadora `CEMENTO5` (5%), pagando un total neto de ₡1 197 000.
+- **Fuga Estimada de Capital (Parte A):** Se produce cuando se emiten compras duplicadas, fragmentadas o fuera de tiempo sin optimización comercial. Si una orden se divide en lotes menores a los umbrales mínimos (ej. por debajo de ₡1 000 000 para `FIJO50000` o debajo de los tramos de `ESCALONADO`), la empresa pierde el descuento por volumen, incurriendo en un costo de adquisición superior evitable mediante el motor de promociones.
+
+### Límites de Entrega de la Rúbrica
+- **Informe Escrito:** Máximo 15 páginas (incluyendo portada, resumen ejecutivo, diagrama ER y matriz de cobertura).
+- **Video de Demostración:** Máximo 5 minutos (cumpliendo la secuencia cronológica del Guion 1).
+- **Exposición Oral:** Máximo 10 minutos (siguiendo las 6 diapositivas del Esquema 2).
+
