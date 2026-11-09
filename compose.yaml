@@ -26,3 +26,4 @@ services:
 volumes:
   mysql_data:
     name: obraneta_mysql_data
+

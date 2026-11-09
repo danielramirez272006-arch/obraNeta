@@ -50,3 +50,4 @@ describe('Prueba de integración con MySQL 8.4', () => {
     }
   });
 });
+

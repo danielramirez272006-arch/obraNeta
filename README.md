@@ -218,3 +218,4 @@ $sinUso.items | Format-Table codigo, proveedorNombre, tipo, fechaInicio, fechaFi
 - [`diagrama-er.md`](file:///c:/Users/calva/taller-cli/ObraNeta/docs/diagrama-er.md): Diagrama Entidad-Relación en Mermaid según el esquema implementado.
 - [`cobertura-requisitos.md`](file:///c:/Users/calva/taller-cli/ObraNeta/docs/cobertura-requisitos.md): Matriz de cobertura de los requisitos del Quiz y casos de la rúbrica.
 - [`guiones-entrega.md`](file:///c:/Users/calva/taller-cli/ObraNeta/docs/guiones-entrega.md): Guion de video demostrativo (5 min) y esquema de presentación (10 min).
+

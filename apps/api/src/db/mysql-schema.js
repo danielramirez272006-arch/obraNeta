@@ -104,3 +104,4 @@ CREATE TABLE IF NOT EXISTS orden_compra_auditoria (
   CONSTRAINT fk_auditoria_promo FOREIGN KEY (promocion_id) REFERENCES promociones(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 `;
+

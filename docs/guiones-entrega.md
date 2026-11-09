@@ -96,3 +96,4 @@
 - **Diapositiva 6 (1 min) | Conclusiones y Suite de Pruebas:**
   - 100% de cobertura de los casos de la rúbrica y casos borde.
   - Idempotencia de semillas y reversión atómica de transacciones.
+

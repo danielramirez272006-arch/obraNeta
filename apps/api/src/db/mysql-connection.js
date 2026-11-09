@@ -154,3 +154,4 @@ export async function seedMysql(pool) {
     conn.release();
   }
 }
+

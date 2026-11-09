@@ -222,3 +222,4 @@ describe('Frontend ObraNeta - Componentes y flujo de aceptación', () => {
     });
   });
 });
+

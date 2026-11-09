@@ -22,3 +22,4 @@ Esta tabla detalla cómo cada requerimiento de la rúbrica y especificación té
 | **Reporte Promociones sin Uso a una Fecha** | `GET /api/reportes/promociones-sin-uso?fecha=YYYY-MM-DD` | `apps/api/tests/api-integracion.test.js` | Muestra FIJO50000 y excluye CEMENTO5 y CEMENTO10 |
 | **Semillas Idempotentes** | `seedDatabase()` y `seedMysql()` con `ON CONFLICT / ON DUPLICATE KEY` | `apps/api/tests/api-integracion.test.js` | Ejecutable indefinidamente sin duplicados ni borrado |
 | **Aislamiento Base Test vs Dev** | `apps/api/src/config/env.js` | `apps/api/tests/mysql-integracion.test.js` | Impide ejecución si `database === testDatabase` |
+

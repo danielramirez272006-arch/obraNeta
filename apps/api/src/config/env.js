@@ -15,3 +15,4 @@ export const config = {
     autoSeed: process.env.AUTO_SEED !== 'false'
   }
 };
+

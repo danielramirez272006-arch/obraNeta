@@ -74,3 +74,4 @@ export function createCatalogosRouter(catalogosRepo) {
 
   return router;
 }
+
