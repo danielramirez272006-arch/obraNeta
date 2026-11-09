@@ -1,3 +1,9 @@
+try {
+  process.loadEnvFile();
+} catch {
+  // Ignorar si no existe .env en el entorno actual
+}
+
 /**
  * Configuración centralizada de base de datos y servidor para ObraNeta.
  */
