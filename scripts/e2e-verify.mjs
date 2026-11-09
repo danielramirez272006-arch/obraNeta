@@ -9,14 +9,13 @@
  */
 
 import assert from 'node:assert/strict';
-import { createApp } from '../apps/api/src/app.js';
+import http from 'node:http';
+import { Duplex } from 'node:stream';
+import { createApp } from '../backend/src/app.js';
 
 console.log('🚀 Iniciando verificación de flujo E2E del caso de aceptación obligatorio...');
 
 const { app } = createApp({ seed: true });
-
-import http from 'node:http';
-import { Duplex } from 'node:stream';
 
 function request(method, url, body) {
   return new Promise((resolve, reject) => {

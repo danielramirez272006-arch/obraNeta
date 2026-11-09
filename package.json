@@ -7,20 +7,23 @@
     "node": ">=24.0.0"
   },
   "workspaces": [
-    "apps/api",
-    "apps/web"
+    "backend",
+    "frontend"
   ],
   "scripts": {
     "dev": "node scripts/dev.mjs",
+    "dev:backend": "npm --workspace @obraneta/api run dev",
+    "dev:frontend": "npm --workspace @obraneta/web run dev",
     "dev:api": "npm --workspace @obraneta/api run dev",
     "dev:web": "npm --workspace @obraneta/web run dev",
     "build": "npm --workspace @obraneta/api run build && npm --workspace @obraneta/web run build",
     "test": "npm --workspace @obraneta/api test && npm --workspace @obraneta/web test",
     "test:api": "npm --workspace @obraneta/api test",
     "test:web": "npm --workspace @obraneta/web test",
+    "test:backend": "npm --workspace @obraneta/api test",
+    "test:frontend": "npm --workspace @obraneta/web test",
     "test:e2e": "node scripts/e2e-verify.mjs",
     "db:init": "npm --workspace @obraneta/api run db:init",
     "db:seed": "npm --workspace @obraneta/api run db:seed"
   }
 }
-

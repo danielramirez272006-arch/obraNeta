@@ -7,35 +7,34 @@ ObraNeta es una aplicación web empresarial diseñada para registrar órdenes de
 
 ## 1. Arquitectura del Proyecto
 
-El sistema está organizado como un **monorepo con npm workspaces**:
+El sistema está organizado como un **monorepo con npm workspaces** con carpetas directas para el backend y el frontend:
 
 ```
 ObraNeta/
-├── apps/
-│   ├── api/                  # Backend Node.js 24, Express, MySQL 8.4 y SQLite
-│   │   ├── src/
-│   │   │   ├── app.js        # Fábrica de aplicación Express (inyección de dependencias)
-│   │   │   ├── server.js     # Arranque del servidor HTTP
-│   │   │   ├── config/       # Variables de entorno y configuración centralizada
-│   │   │   ├── db/           # Conexión, esquemas MySQL/SQLite y semillas idempotentes
-│   │   │   ├── http/         # Manejo común de errores y validaciones
-│   │   │   └── modules/
-│   │   │       ├── catalogos/   # Consulta de proveedores, categorías y artículos
-│   │   │       ├── ordenes/     # Servicios y repositorios de órdenes de compra
-│   │   │       ├── promociones/ # Repositorios y Motor Puro de Promociones
-│   │   │       └── reportes/    # Consultas analíticas de ahorros y vigencias
-│   │   └── tests/            # Pruebas unitarias de motor e integración de API
-│   └── web/                  # Frontend React 19, Vite y TypeScript
-│       ├── src/
-│       │   ├── app/          # App shell, barra de navegación y pie de página
-│       │   ├── api/          # Cliente HTTP tipado, DTOs y manejo de errores
-│       │   ├── components/   # Componentes compartidos, alertas y formateadores CRC
-│       │   ├── features/
-│       │   │   ├── ordenes/     # Registro de OC y vista de Auditoría histórica
-│       │   │   ├── promociones/ # Lista y formulario adaptativo para los 4 tipos
-│       │   │   └── reportes/    # Ahorros mensuales y promociones sin uso
-│       │   └── styles/       # Estilos CSS responsivos (escritorio y móvil)
-│       └── tests/            # Pruebas de componentes y flujo de interfaz (Vitest)
+├── backend/                  # Backend Node.js 24, Express, MySQL 8.4 y SQLite
+│   ├── src/
+│   │   ├── app.js            # Fábrica de aplicación Express (inyección de dependencias)
+│   │   ├── server.js         # Arranque del servidor HTTP
+│   │   ├── config/           # Variables de entorno y configuración centralizada
+│   │   ├── db/               # Conexión, esquemas MySQL/SQLite y semillas idempotentes
+│   │   ├── http/             # Manejo común de errores y validaciones
+│   │   └── modules/
+│   │       ├── catalogos/    # Consulta de proveedores, categorías y artículos
+│   │       ├── ordenes/      # Servicios y repositorios de órdenes de compra
+│   │       ├── promociones/  # Repositorios y Motor Puro de Promociones
+│   │       └── reportes/     # Consultas analíticas de ahorros y vigencias
+│   └── tests/                # Pruebas unitarias de motor e integración de API
+├── frontend/                 # Frontend React 19, Vite y TypeScript
+│   ├── src/
+│   │   ├── app/              # App shell, barra de navegación y pie de página
+│   │   ├── api/              # Cliente HTTP tipado, DTOs y manejo de errores
+│   │   ├── components/       # Componentes compartidos, alertas y formateadores CRC
+│   │   ├── features/
+│   │   │   ├── ordenes/      # Registro de OC y vista de Auditoría histórica
+│   │   │   ├── promociones/  # Lista y formulario adaptativo para los 4 tipos
+│   │   │   └── reportes/     # Ahorros mensuales y promociones sin uso
+│   │   └── styles/           # Estilos CSS responsivos (escritorio y móvil)
+│   └── tests/                # Pruebas de componentes y flujo de interfaz (Vitest)
 ├── docs/                     # Diagrama ER, matriz de cobertura y guiones de entrega
 ├── scripts/                  # Scripts de desarrollo conjunto y verificación E2E
 ├── compose.yaml              # Servicio MySQL 8.4 con healthcheck y volumen persistente
@@ -109,11 +108,11 @@ npm run dev
 
 ### Comandos Individuales
 ```bash
-# Iniciar únicamente la API
-npm run dev:api
+# Iniciar únicamente el backend
+npm run dev:backend
 
-# Iniciar únicamente la aplicación Web
-npm run dev:web
+# Iniciar únicamente el frontend
+npm run dev:frontend
 
 # Compilar ambas aplicaciones
 npm run build
@@ -126,14 +125,14 @@ npm run build
 El proyecto incluye pruebas completas que cubren la rúbrica al 100%:
 
 ```bash
-# Ejecutar todas las pruebas (API + Web)
+# Ejecutar todas las pruebas (Backend + Frontend)
 npm test
 
 # Ejecutar pruebas del backend (unitarias del motor + integración de API)
-npm run test:api
+npm run test:backend
 
 # Ejecutar pruebas del frontend (Vitest + Testing Library)
-npm run test:web
+npm run test:frontend
 
 # Ejecutar verificación de extremo a extremo (E2E) del caso obligatorio
 npm run test:e2e
@@ -210,12 +209,3 @@ $ahorros.items | Format-Table proveedorNombre, mes, cantidadOrdenes, subtotalTot
 $sinUso = Invoke-RestMethod -Uri "http://localhost:3001/api/reportes/promociones-sin-uso?fecha=2026-10-15"
 $sinUso.items | Format-Table codigo, proveedorNombre, tipo, fechaInicio, fechaFin -AutoSize
 ```
-
----
-
-## 8. Documentación Adicional en `docs/`
-
-- [`diagrama-er.md`](file:///c:/Users/calva/taller-cli/ObraNeta/docs/diagrama-er.md): Diagrama Entidad-Relación en Mermaid según el esquema implementado.
-- [`cobertura-requisitos.md`](file:///c:/Users/calva/taller-cli/ObraNeta/docs/cobertura-requisitos.md): Matriz de cobertura de los requisitos del Quiz y casos de la rúbrica.
-- [`guiones-entrega.md`](file:///c:/Users/calva/taller-cli/ObraNeta/docs/guiones-entrega.md): Guion de video demostrativo (5 min) y esquema de presentación (10 min).
-
