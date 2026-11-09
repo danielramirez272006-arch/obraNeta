@@ -77,7 +77,7 @@
   - Constructora Del Valle S.A.
   - Problemática: Descuentos dispersos de proveedores, órdenes sin optimización de costos y falta de auditoría histórica.
 - **Diapositiva 2 (1.5 min) | Arquitectura Tecnológica:**
-  - Monorepo npm workspaces (`apps/api` y `apps/web`).
+  - Monorepo npm workspaces (`backend` y `frontend`).
   - Backend: Node.js 24, Express, MySQL 8.4 (InnoDB, utf8mb4), SQLite (modo portátil).
   - Frontend: React 19, TypeScript, Vite con proxy de desarrollo.
   - Integridad: Aritmética entera en CRC, puntos básicos (bps) y redondeo half-up.
