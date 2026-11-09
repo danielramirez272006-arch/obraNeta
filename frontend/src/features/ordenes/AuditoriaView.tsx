@@ -68,10 +68,10 @@ export const AuditoriaView: React.FC<AuditoriaViewProps> = ({
   if (ordenes.length === 0) {
     return (
       <section className="panel" aria-labelledby="titulo-auditoria">
-        <div className="panel-header">
-          <h2 id="titulo-auditoria">Auditoría de Promociones por Orden</h2>
+        <div className="panel-header view-title-anim">
+          <h2 id="titulo-auditoria">Auditoría de Promociones</h2>
           <p className="panel-subtitle">
-            Consulte el detalle histórico de cada promoción evaluada, su ahorro potencial y el motivo de aplicación o descarte.
+            Consulte el registro inmutable de cada promoción evaluada, su ahorro potencial y el motivo de aplicación o descarte.
           </p>
         </div>
         <EmptyState
@@ -87,11 +87,11 @@ export const AuditoriaView: React.FC<AuditoriaViewProps> = ({
 
   return (
     <section className="panel" aria-labelledby="titulo-auditoria">
-      <div className="panel-header">
+      <div className="panel-header view-title-anim">
         <div>
-          <h2 id="titulo-auditoria">Auditoría de la Orden de Compra</h2>
+          <h2 id="titulo-auditoria">Auditoría de Promociones</h2>
           <p className="panel-subtitle">
-            Registro inmutable de las promociones evaluadas al momento de guardar la orden.
+            Registro inmutable y trazabilidad de las promociones evaluadas al momento de guardar la orden.
           </p>
         </div>
 
@@ -200,67 +200,90 @@ export const AuditoriaView: React.FC<AuditoriaViewProps> = ({
                 description="Al momento de guardar esta orden, el proveedor no contaba con promociones configuradas."
               />
             ) : (
-              <div className="audit-cards" data-testid="lista-evaluaciones-auditoria">
-                {auditoria.evaluaciones.map((ev) => (
-                  <article
-                    key={ev.codigo}
-                    className={`audit-card ${ev.aplicada ? 'audit-card-applied' : 'audit-card-discarded'}`}
-                    data-testid={`auditoria-item-${ev.codigo}`}
-                  >
-                    <div className="audit-card-header">
-                      <div>
-                        <span
-                          className={`badge ${ev.aplicada ? 'badge-success' : ev.elegible ? 'badge-warning' : 'badge-neutral'}`}
-                        >
-                          {ev.aplicada
-                            ? 'APLICADA'
-                            : ev.elegible
-                              ? 'DESCARTADA (ELEGIBLE)'
-                              : 'DESCARTADA (NO ELEGIBLE)'}
-                        </span>
-                        <h4 className="audit-promo-title">
-                          <code>{ev.codigo}</code> — {ev.nombre}
-                        </h4>
-                      </div>
-                      <div className="audit-savings">
-                        <span className="audit-savings-label">Ahorro potencial</span>
-                        <strong className="audit-savings-amount">
-                          {formatCRC(ev.ahorroPotencial)}
-                        </strong>
-                      </div>
-                    </div>
+              <div
+                className="audit-cards"
+                data-testid="lista-evaluaciones-auditoria"
+                key={auditoria.ordenId}
+              >
+                {auditoria.evaluaciones.map((ev, index) => {
+                  const staggerClass =
+                    index === 0
+                      ? 'audit-stagger audit-stagger-0'
+                      : index === 1
+                        ? 'audit-stagger audit-stagger-1'
+                        : index === 2
+                          ? 'audit-stagger audit-stagger-2'
+                          : '';
 
-                    <div className="audit-card-body">
-                      <p className="audit-motive">
-                        <strong>Motivo:</strong>{' '}
-                        <span className="motive-code">{etiquetaMotivoEvaluacion(ev.motivo)}</span>
-                      </p>
-                      <p className="audit-explanation">{ev.explicacion}</p>
-                      <div className="audit-config-meta">
-                        <span>
-                          <strong>Tipo:</strong> {etiquetaTipoPromocion(ev.tipo)}
-                        </span>
-                        <span>
-                          <strong>Vigencia evaluada:</strong> {ev.configuracion.fechaInicio} al{' '}
-                          {ev.configuracion.fechaFin}
-                        </span>
-                        <span>
-                          <strong>Prioridad:</strong> {ev.configuracion.prioridad}
-                        </span>
-                        {ev.configuracion.montoMinimo > 0 && (
-                          <span>
-                            <strong>Mínimo OC:</strong> {formatCRC(ev.configuracion.montoMinimo)}
+                  return (
+                    <article
+                      key={ev.codigo}
+                      className={`audit-card ${ev.aplicada ? 'audit-card-applied' : 'audit-card-discarded'} ${staggerClass}`}
+                      data-testid={`auditoria-item-${ev.codigo}`}
+                    >
+                      <div className="audit-card-header">
+                        <div>
+                          <span
+                            className={`badge ${
+                              ev.aplicada
+                                ? 'badge-success'
+                                : ev.elegible
+                                  ? 'badge-warning'
+                                  : 'badge-neutral'
+                            }`}
+                          >
+                            {ev.aplicada
+                              ? 'Aplicada'
+                              : ev.elegible
+                                ? 'Elegible, no aplicada'
+                                : 'No elegible'}
                           </span>
-                        )}
-                        {ev.configuracion.sku && (
-                          <span>
-                            <strong>Filtro SKU:</strong> <code>{ev.configuracion.sku}</code>
-                          </span>
-                        )}
+                          <h4 className="audit-promo-title">
+                            <code>{ev.codigo}</code> — {ev.nombre}
+                          </h4>
+                        </div>
+                        <div className="audit-savings">
+                          <span className="audit-savings-label">Ahorro potencial</span>
+                          <strong className="audit-savings-amount">
+                            {formatCRC(ev.ahorroPotencial)}
+                          </strong>
+                        </div>
                       </div>
-                    </div>
-                  </article>
-                ))}
+
+                      <div className="audit-card-body">
+                        <p className="audit-motive">
+                          <strong>Motivo:</strong>{' '}
+                          <span className="motive-code">
+                            {etiquetaMotivoEvaluacion(ev.motivo)}
+                          </span>
+                        </p>
+                        <p className="audit-explanation">{ev.explicacion}</p>
+                        <div className="audit-config-meta">
+                          <span>
+                            <strong>Tipo:</strong> {etiquetaTipoPromocion(ev.tipo)}
+                          </span>
+                          <span>
+                            <strong>Vigencia:</strong> {ev.configuracion.fechaInicio} al{' '}
+                            {ev.configuracion.fechaFin}
+                          </span>
+                          <span>
+                            <strong>Prioridad:</strong> {ev.configuracion.prioridad}
+                          </span>
+                          {ev.configuracion.montoMinimo > 0 && (
+                            <span>
+                              <strong>Mínimo OC:</strong> {formatCRC(ev.configuracion.montoMinimo)}
+                            </span>
+                          )}
+                          {ev.configuracion.sku && (
+                            <span>
+                              <strong>SKU:</strong> <code>{ev.configuracion.sku}</code>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             )}
           </div>

@@ -81,7 +81,6 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
     const cemGris =
       articulos.find((a) => a.sku === 'CEM-GRIS-50') ?? articulos[0];
 
-    // Sugerir número de OC disponible
     const sugerido = calcularNumeroSugerido(ordenes);
     setNumeroOc(sugerido);
     setFechaOc('2026-10-15');
@@ -98,7 +97,7 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
     setFieldErrors({});
     setBannerError(null);
     setInfoMessage(
-      'Ejemplo de cemento cargado (200 sacos de CEM-GRIS-50 a ₡6 300 del 2026-10-15 para el Proveedor A). Revise los datos y presione «Registrar orden de compra».'
+      'Ejemplo cargado: 200 sacos de CEM-GRIS-50 a ₡6 300 (Proveedor A). Puede revisar y modificar los datos antes de registrar.'
     );
   };
 
@@ -185,11 +184,11 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
   return (
     <div className="screen-stack">
       <section className="panel" aria-labelledby="titulo-nueva-oc">
-        <div className="panel-header">
+        <div className="panel-header view-title-anim">
           <div>
-            <h2 id="titulo-nueva-oc">Registrar Orden de Compra (OC)</h2>
+            <h2 id="titulo-nueva-oc">Registro de Orden de Compra</h2>
             <p className="panel-subtitle">
-              Ingrese los datos de la orden o cargue el caso de demostración de cemento para evaluar promociones automáticamente.
+              Ingrese los datos de la orden comercial o cargue el caso de prueba para calcular las promociones aplicables.
             </p>
           </div>
           <button
@@ -220,57 +219,60 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
         )}
 
         <form onSubmit={handleSubmit} noValidate className="oc-form">
-          <div className="form-grid-3">
-            <div className="form-group">
-              <label htmlFor="input-numero-oc">Número de OC</label>
-              <input
-                id="input-numero-oc"
-                type="text"
-                value={numeroOc}
-                onChange={(e) => setNumeroOc(e.target.value)}
-                placeholder="Ej. OC-2026-001"
-                required
-                aria-invalid={Boolean(fieldErrors.numeroOc)}
-              />
-              <FormFieldError error={fieldErrors.numeroOc} />
-            </div>
+          <div className="form-section-group">
+            <h3 className="form-group-title">Datos Generales</h3>
+            <div className="form-grid-3">
+              <div className="form-group">
+                <label htmlFor="input-numero-oc">Número de OC</label>
+                <input
+                  id="input-numero-oc"
+                  type="text"
+                  value={numeroOc}
+                  onChange={(e) => setNumeroOc(e.target.value)}
+                  placeholder="Ej. OC-2026-001"
+                  required
+                  aria-invalid={Boolean(fieldErrors.numeroOc)}
+                />
+                <FormFieldError error={fieldErrors.numeroOc} />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="input-fecha-oc">Fecha de la orden</label>
-              <input
-                id="input-fecha-oc"
-                type="date"
-                value={fechaOc}
-                onChange={(e) => setFechaOc(e.target.value)}
-                required
-                aria-invalid={Boolean(fieldErrors.fechaOc)}
-              />
-              <FormFieldError error={fieldErrors.fechaOc} />
-            </div>
+              <div className="form-group">
+                <label htmlFor="input-fecha-oc">Fecha de la orden</label>
+                <input
+                  id="input-fecha-oc"
+                  type="date"
+                  value={fechaOc}
+                  onChange={(e) => setFechaOc(e.target.value)}
+                  required
+                  aria-invalid={Boolean(fieldErrors.fechaOc)}
+                />
+                <FormFieldError error={fieldErrors.fechaOc} />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="select-proveedor-oc">Proveedor</label>
-              <select
-                id="select-proveedor-oc"
-                value={proveedorId}
-                onChange={(e) => setProveedorId(e.target.value)}
-                required
-                aria-invalid={Boolean(fieldErrors.proveedorId)}
-              >
-                <option value="">Seleccione un proveedor...</option>
-                {proveedores.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nombre} ({p.codigo})
-                  </option>
-                ))}
-              </select>
-              <FormFieldError error={fieldErrors.proveedorId} />
+              <div className="form-group">
+                <label htmlFor="select-proveedor-oc">Proveedor</label>
+                <select
+                  id="select-proveedor-oc"
+                  value={proveedorId}
+                  onChange={(e) => setProveedorId(e.target.value)}
+                  required
+                  aria-invalid={Boolean(fieldErrors.proveedorId)}
+                >
+                  <option value="">Seleccione un proveedor...</option>
+                  {proveedores.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.nombre} ({p.codigo})
+                    </option>
+                  ))}
+                </select>
+                <FormFieldError error={fieldErrors.proveedorId} />
+              </div>
             </div>
           </div>
 
           <div className="lines-section">
             <div className="lines-header">
-              <h3>Líneas de artículos</h3>
+              <h3>Líneas de Artículos</h3>
               <button
                 type="button"
                 className="btn btn-outline btn-sm"
@@ -302,7 +304,7 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
                         <option value="">Seleccione artículo...</option>
                         {articulos.map((art) => (
                           <option key={art.id} value={art.id}>
-                            {art.sku} — {art.nombre} ({art.categoriaNombre})
+                            {art.sku} — {art.nombre}
                           </option>
                         ))}
                       </select>
@@ -341,7 +343,7 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
 
                     <div className="line-col-subtotal">
                       <span className="line-subtotal-label">Subtotal línea</span>
-                      <strong className="line-subtotal-value">{formatCRC(subLinea)}</strong>
+                      <strong className="line-subtotal-value num">{formatCRC(subLinea)}</strong>
                     </div>
 
                     <div className="line-col-actions">
@@ -363,8 +365,8 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
 
           <div className="form-footer">
             <div className="preliminary-box" data-testid="subtotal-preliminar">
-              <span>Subtotal preliminar (sin descuento):</span>
-              <strong>{formatCRC(subtotalPreliminar)}</strong>
+              <span>Subtotal preliminar:</span>
+              <strong className="num">{formatCRC(subtotalPreliminar)}</strong>
             </div>
 
             <button
@@ -373,73 +375,87 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
               disabled={submitting}
               data-testid="btn-guardar-orden"
             >
-              {submitting ? 'Guardando orden...' : 'Registrar orden de compra'}
+              {submitting ? 'Guardando...' : 'Registrar orden de compra'}
             </button>
           </div>
         </form>
       </section>
 
+      {/* Resultados Confirmados en Orden: Subtotal, Promoción, Ahorro, Total Neto */}
       {ultimaOrdenConfirmada && (
         <section
+          key={ultimaOrdenConfirmada.id}
           className="panel result-panel"
           aria-labelledby="titulo-resultado-oc"
           data-testid="resultado-orden-confirmada"
         >
-          <div className="panel-header">
+          <div className="panel-header view-title-anim">
             <div>
-              <span className="badge badge-success">Orden registrada con éxito</span>
+              <span className="badge badge-success">Confirmada en Sistema</span>
               <h2 id="titulo-resultado-oc">
-                Resultado confirmado — {ultimaOrdenConfirmada.numeroOc}
+                Liquidación Confirmada — {ultimaOrdenConfirmada.numeroOc}
               </h2>
             </div>
             <button
               type="button"
-              className="btn btn-primary"
+              className="btn btn-secondary"
               onClick={() => onOpenAuditoria(ultimaOrdenConfirmada.id)}
               data-testid="btn-ver-auditoria-confirmada"
             >
-              Abrir auditoría de la orden
+              Consultar auditoría de la orden
             </button>
           </div>
 
-          <div className="summary-grid">
-            <div className="summary-card">
+          <div className="summary-grid-confirmed">
+            {/* 1. Subtotal (Delay 0ms) */}
+            <div className="summary-card card-stagger stagger-subtotal">
               <span className="summary-label">Subtotal</span>
-              <strong className="summary-value" data-testid="resultado-subtotal">
+              <strong className="summary-value num" data-testid="resultado-subtotal">
                 {formatCRC(ultimaOrdenConfirmada.subtotal)}
               </strong>
+              <span className="summary-meta">Antes de descuento</span>
             </div>
 
-            <div className="summary-card highlight-success">
+            {/* 2. Promoción aplicada (Delay 70ms) */}
+            <div className="summary-card card-stagger stagger-promocion">
               <span className="summary-label">Promoción aplicada</span>
               <strong className="summary-value" data-testid="resultado-promocion">
-                {ultimaOrdenConfirmada.codigoAplicado ?? 'Sin promoción aplicable'}
+                {ultimaOrdenConfirmada.codigoAplicado ?? 'Sin promoción'}
               </strong>
+              <span className="summary-meta">Regla ganadora</span>
             </div>
 
-            <div className="summary-card highlight-success">
-              <span className="summary-label">Ahorro aplicado</span>
-              <strong className="summary-value" data-testid="resultado-ahorro">
+            {/* 3. Ahorro (Delay 140ms + Highlight) */}
+            <div className="summary-card card-stagger stagger-ahorro savings-highlight">
+              <span className="summary-label">
+                <span>Ahorro obtenido</span>
+                <span className="badge badge-accent">Descuento</span>
+              </span>
+              <strong className="summary-value num" data-testid="resultado-ahorro">
                 {formatCRC(ultimaOrdenConfirmada.ahorro)}
               </strong>
+              <span className="summary-meta">Beneficio liquidado</span>
             </div>
 
-            <div className="summary-card highlight-primary">
-              <span className="summary-label">Total neto</span>
-              <strong className="summary-value" data-testid="resultado-total-neto">
+            {/* 4. Total neto (Delay 210ms - Hero visual) */}
+            <div className="summary-card card-stagger stagger-total card-total-hero">
+              <span className="summary-label">Total neto a pagar</span>
+              <strong className="summary-value num" data-testid="resultado-total-neto">
                 {formatCRC(ultimaOrdenConfirmada.totalNeto)}
               </strong>
+              <span className="summary-meta">Importe final de facturación</span>
             </div>
           </div>
         </section>
       )}
 
+      {/* Historial de Órdenes Guardadas */}
       <section className="panel" aria-labelledby="titulo-ordenes-guardadas">
-        <div className="panel-header">
+        <div className="panel-header view-title-anim">
           <div>
-            <h2 id="titulo-ordenes-guardadas">Órdenes de Compra Guardadas</h2>
+            <h2 id="titulo-ordenes-guardadas">Historial de Órdenes de Compra</h2>
             <p className="panel-subtitle">
-              Historial de órdenes procesadas. Puede abrir la auditoría de cualquiera en cualquier momento.
+              Registro histórico consolidado. Seleccione cualquier orden para auditar la evaluación de promociones.
             </p>
           </div>
         </div>
@@ -447,7 +463,7 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
         {ordenes.length === 0 ? (
           <EmptyState
             title="No hay órdenes registradas todavía"
-            description="Use el botón «Cargar ejemplo de cemento» arriba y envíe el formulario para registrar la primera orden."
+            description="Presione «Cargar ejemplo de cemento» arriba y envíe el formulario para emitir la primera orden."
           />
         ) : (
           <div className="table-responsive">
@@ -491,7 +507,7 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
                         onClick={() => onOpenAuditoria(oc.id)}
                         data-testid={`btn-auditoria-oc-${oc.numeroOc}`}
                       >
-                        Ver auditoría
+                        Auditoría
                       </button>
                     </td>
                   </tr>
@@ -504,4 +520,3 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
     </div>
   );
 };
-
