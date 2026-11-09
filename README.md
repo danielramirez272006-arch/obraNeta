@@ -209,3 +209,4 @@ $ahorros.items | Format-Table proveedorNombre, mes, cantidadOrdenes, subtotalTot
 $sinUso = Invoke-RestMethod -Uri "http://localhost:3001/api/reportes/promociones-sin-uso?fecha=2026-10-15"
 $sinUso.items | Format-Table codigo, proveedorNombre, tipo, fechaInicio, fechaFin -AutoSize
 ```
+# obraNeta
