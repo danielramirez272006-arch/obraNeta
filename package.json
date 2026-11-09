@@ -23,6 +23,7 @@
     "test:backend": "npm --workspace @obraneta/api test",
     "test:frontend": "npm --workspace @obraneta/web test",
     "test:e2e": "node scripts/e2e-verify.mjs",
+    "db:check": "node scripts/check-db.mjs",
     "db:init": "npm --workspace @obraneta/api run db:init",
     "db:seed": "npm --workspace @obraneta/api run db:seed"
   }
