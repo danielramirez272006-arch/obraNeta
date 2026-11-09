@@ -72,7 +72,7 @@ export const App: React.FC = () => {
         <div className="header-inner">
           <div className="brand-block">
             <span className="brand-badge">Constructora Del Valle S.A.</span>
-            <h1 className="brand-title">ObraNeta — Órdenes de Compra y Promociones</h1>
+            <h1 className="brand-title">ObraNeta</h1>
           </div>
 
           <nav className="main-nav" aria-label="Navegación principal">
@@ -83,7 +83,8 @@ export const App: React.FC = () => {
               aria-current={vista === 'ordenes' ? 'page' : undefined}
               data-testid="tab-ordenes"
             >
-              1. Órdenes
+              {vista === 'ordenes' && <span className="nav-indicator" aria-hidden="true" />}
+              Órdenes
             </button>
             <button
               type="button"
@@ -92,7 +93,8 @@ export const App: React.FC = () => {
               aria-current={vista === 'auditoria' ? 'page' : undefined}
               data-testid="tab-auditoria"
             >
-              2. Auditoría {ordenes.length > 0 ? `(${ordenes.length})` : ''}
+              {vista === 'auditoria' && <span className="nav-indicator" aria-hidden="true" />}
+              Auditoría {ordenes.length > 0 ? `(${ordenes.length})` : ''}
             </button>
             <button
               type="button"
@@ -101,7 +103,8 @@ export const App: React.FC = () => {
               aria-current={vista === 'promociones' ? 'page' : undefined}
               data-testid="tab-promociones"
             >
-              3. Promociones
+              {vista === 'promociones' && <span className="nav-indicator" aria-hidden="true" />}
+              Promociones
             </button>
             <button
               type="button"
@@ -110,7 +113,8 @@ export const App: React.FC = () => {
               aria-current={vista === 'reportes' ? 'page' : undefined}
               data-testid="tab-reportes"
             >
-              4. Reportes
+              {vista === 'reportes' && <span className="nav-indicator" aria-hidden="true" />}
+              Reportes
             </button>
           </nav>
         </div>
@@ -128,7 +132,7 @@ export const App: React.FC = () => {
         {loadingInicial ? (
           <div className="panel">
             <p className="loading-state" role="status">
-              Cargando catálogos y órdenes de ObraNeta...
+              Cargando datos del sistema...
             </p>
           </div>
         ) : (
@@ -166,10 +170,9 @@ export const App: React.FC = () => {
 
       <footer className="app-footer">
         <p>
-          ObraNeta · Gestión de Inventarios — Constructora Del Valle S.A. · Moneda: Colones Costarricenses (CRC)
+          Constructora Del Valle S.A. — Sistema de Gestión y Liquidación de Compras ObraNeta (CRC)
         </p>
       </footer>
     </div>
   );
 };
-
