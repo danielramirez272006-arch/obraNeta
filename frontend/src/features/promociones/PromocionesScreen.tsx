@@ -220,7 +220,7 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
   return (
     <div className="screen-stack">
       <section className="panel" aria-labelledby="titulo-crear-promocion">
-        <div className="panel-header">
+        <div className="panel-header view-title-anim">
           <div>
             <h2 id="titulo-crear-promocion">Crear Nueva Promoción</h2>
             <p className="panel-subtitle">
@@ -248,54 +248,90 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
         )}
 
         <form onSubmit={handleSubmit} noValidate className="promo-form">
-          <div className="form-grid-3">
-            <div className="form-group">
-              <label htmlFor="promo-proveedor">Proveedor</label>
-              <select
-                id="promo-proveedor"
-                value={proveedorId}
-                onChange={(e) => setProveedorId(e.target.value)}
-                aria-invalid={Boolean(fieldErrors.proveedorId)}
-              >
-                <option value="">Seleccione proveedor...</option>
-                {proveedores.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nombre} ({p.codigo})
-                  </option>
-                ))}
-              </select>
-              <FormFieldError error={fieldErrors.proveedorId} />
-            </div>
+          {/* 1. Identificación */}
+          <div className="form-section-group">
+            <h3 className="form-group-title">1. Identificación</h3>
+            <div className="form-grid-3">
+              <div className="form-group">
+                <label htmlFor="promo-proveedor">Proveedor</label>
+                <select
+                  id="promo-proveedor"
+                  value={proveedorId}
+                  onChange={(e) => setProveedorId(e.target.value)}
+                  aria-invalid={Boolean(fieldErrors.proveedorId)}
+                >
+                  <option value="">Seleccione proveedor...</option>
+                  {proveedores.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.nombre} ({p.codigo})
+                    </option>
+                  ))}
+                </select>
+                <FormFieldError error={fieldErrors.proveedorId} />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="promo-codigo">Código de promoción</label>
-              <input
-                id="promo-codigo"
-                type="text"
-                value={codigo}
-                onChange={(e) => setCodigo(e.target.value.toUpperCase())}
-                placeholder="Ej. CEMENTO5"
-                aria-invalid={Boolean(fieldErrors.codigo)}
-              />
-              <FormFieldError error={fieldErrors.codigo} />
-            </div>
+              <div className="form-group">
+                <label htmlFor="promo-codigo">Código de promoción</label>
+                <input
+                  id="promo-codigo"
+                  type="text"
+                  value={codigo}
+                  onChange={(e) => setCodigo(e.target.value.toUpperCase())}
+                  placeholder="Ej. CEMENTO5"
+                  aria-invalid={Boolean(fieldErrors.codigo)}
+                />
+                <FormFieldError error={fieldErrors.codigo} />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="promo-nombre">Nombre descriptivo</label>
-              <input
-                id="promo-nombre"
-                type="text"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                placeholder="Ej. Descuento 5% en Cemento Gris"
-                aria-invalid={Boolean(fieldErrors.nombre)}
-              />
-              <FormFieldError error={fieldErrors.nombre} />
+              <div className="form-group">
+                <label htmlFor="promo-nombre">Nombre descriptivo</label>
+                <input
+                  id="promo-nombre"
+                  type="text"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  placeholder="Ej. Descuento 5% en Cemento Gris"
+                  aria-invalid={Boolean(fieldErrors.nombre)}
+                />
+                <FormFieldError error={fieldErrors.nombre} />
+              </div>
             </div>
           </div>
 
-          <div className="form-grid-3">
-            <div className="form-group">
+          {/* 2. Vigencia */}
+          <div className="form-section-group">
+            <h3 className="form-group-title">2. Vigencia</h3>
+            <div className="form-grid-2">
+              <div className="form-group">
+                <label htmlFor="promo-fecha-inicio">Fecha de inicio (inclusiva)</label>
+                <input
+                  id="promo-fecha-inicio"
+                  type="date"
+                  value={fechaInicio}
+                  onChange={(e) => setFechaInicio(e.target.value)}
+                  aria-invalid={Boolean(fieldErrors.fechaInicio)}
+                />
+                <FormFieldError error={fieldErrors.fechaInicio} />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="promo-fecha-fin">Fecha de fin (inclusiva)</label>
+                <input
+                  id="promo-fecha-fin"
+                  type="date"
+                  value={fechaFin}
+                  onChange={(e) => setFechaFin(e.target.value)}
+                  aria-invalid={Boolean(fieldErrors.fechaFin)}
+                />
+                <FormFieldError error={fieldErrors.fechaFin} />
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Beneficio */}
+          <div className="form-section-group">
+            <h3 className="form-group-title">3. Beneficio</h3>
+            <div className="form-group" style={{ marginBottom: '1rem' }}>
               <label htmlFor="promo-tipo">Tipo de promoción</label>
               <select
                 id="promo-tipo"
@@ -311,205 +347,185 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
               <FormFieldError error={fieldErrors.tipo} />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="promo-fecha-inicio">Fecha de inicio (inclusiva)</label>
-              <input
-                id="promo-fecha-inicio"
-                type="date"
-                value={fechaInicio}
-                onChange={(e) => setFechaInicio(e.target.value)}
-                aria-invalid={Boolean(fieldErrors.fechaInicio)}
-              />
-              <FormFieldError error={fieldErrors.fechaInicio} />
-            </div>
+            {/* Campos adaptativos según el tipo de beneficio */}
+            <div className="adaptive-benefit-box">
+              <h3>Configuración del beneficio ({etiquetaTipoPromocion(tipo)})</h3>
 
-            <div className="form-group">
-              <label htmlFor="promo-fecha-fin">Fecha de fin (inclusiva)</label>
-              <input
-                id="promo-fecha-fin"
-                type="date"
-                value={fechaFin}
-                onChange={(e) => setFechaFin(e.target.value)}
-                aria-invalid={Boolean(fieldErrors.fechaFin)}
-              />
-              <FormFieldError error={fieldErrors.fechaFin} />
-            </div>
-          </div>
-
-          {/* Campos adaptativos según el tipo de beneficio */}
-          <div className="adaptive-benefit-box">
-            <h3>Configuración del beneficio ({etiquetaTipoPromocion(tipo)})</h3>
-
-            {tipo === 'PORCENTAJE' && (
-              <div className="form-group">
-                <label htmlFor="promo-descuento-pct">Descuento (%)</label>
-                <input
-                  id="promo-descuento-pct"
-                  type="text"
-                  inputMode="decimal"
-                  placeholder="Ej. 5 o 5,25"
-                  value={descuentoPct}
-                  onChange={(e) => setDescuentoPct(e.target.value)}
-                  aria-invalid={Boolean(fieldErrors.descuentoPct || fieldErrors.tasaBps)}
-                />
-                <span className="field-hint">
-                  Acepta hasta 2 decimales con punto o coma (ej. 5 % = 500 bps, 5,25 % = 525 bps).
-                </span>
-                <FormFieldError error={fieldErrors.descuentoPct || fieldErrors.tasaBps} />
-              </div>
-            )}
-
-            {tipo === 'MONTO_FIJO' && (
-              <div className="form-group">
-                <label htmlFor="promo-monto-fijo">Monto fijo de descuento (CRC enteros)</label>
-                <input
-                  id="promo-monto-fijo"
-                  type="number"
-                  min={1}
-                  value={montoFijo}
-                  onChange={(e) => setMontoFijo(e.target.value)}
-                  aria-invalid={Boolean(fieldErrors.montoFijo)}
-                />
-                <span className="field-hint">
-                  Vista previa: {formatCRC(Number(montoFijo) || 0)}
-                </span>
-                <FormFieldError error={fieldErrors.montoFijo} />
-              </div>
-            )}
-
-            {tipo === 'ESCALONADO' && (
-              <div className="tramos-editor">
-                <div className="lines-header">
-                  <span>
-                    Defina los tramos de cantidad mínima del SKU y su Descuento (%):
+              {tipo === 'PORCENTAJE' && (
+                <div className="form-group">
+                  <label htmlFor="promo-descuento-pct">Descuento (%)</label>
+                  <input
+                    id="promo-descuento-pct"
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="Ej. 5 o 5,25"
+                    value={descuentoPct}
+                    onChange={(e) => setDescuentoPct(e.target.value)}
+                    aria-invalid={Boolean(fieldErrors.descuentoPct || fieldErrors.tasaBps)}
+                  />
+                  <span className="field-hint">
+                    Acepta hasta 2 decimales con punto o coma (ej. 5 % = 500 bps, 5,25 % = 525 bps).
                   </span>
-                  <button
-                    type="button"
-                    className="btn btn-outline btn-sm"
-                    onClick={handleAgregarTramo}
-                  >
-                    + Agregar tramo
-                  </button>
+                  <FormFieldError error={fieldErrors.descuentoPct || fieldErrors.tasaBps} />
                 </div>
+              )}
 
-                <FormFieldError error={fieldErrors.tramos} />
+              {tipo === 'MONTO_FIJO' && (
+                <div className="form-group">
+                  <label htmlFor="promo-monto-fijo">Monto fijo de descuento (CRC enteros)</label>
+                  <input
+                    id="promo-monto-fijo"
+                    type="number"
+                    min={1}
+                    value={montoFijo}
+                    onChange={(e) => setMontoFijo(e.target.value)}
+                    aria-invalid={Boolean(fieldErrors.montoFijo)}
+                  />
+                  <span className="field-hint">
+                    Vista previa: {formatCRC(Number(montoFijo) || 0)}
+                  </span>
+                  <FormFieldError error={fieldErrors.montoFijo} />
+                </div>
+              )}
 
-                {tramos.map((tramo, idx) => (
-                  <div className="tramo-row" key={idx}>
-                    <div className="form-group">
-                      <label htmlFor={`tramo-cant-${idx}`}>
-                        Cantidad mínima (Tramo #{idx + 1})
-                      </label>
-                      <input
-                        id={`tramo-cant-${idx}`}
-                        type="number"
-                        min={1}
-                        value={tramo.cantidadMinima}
-                        onChange={(e) =>
-                          handleCambioTramo(idx, 'cantidadMinima', e.target.value)
-                        }
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor={`tramo-tasa-${idx}`}>
-                        Descuento (%)
-                      </label>
-                      <input
-                        id={`tramo-tasa-${idx}`}
-                        type="text"
-                        inputMode="decimal"
-                        placeholder="Ej. 8 o 12,5"
-                        value={tramo.descuentoPct}
-                        onChange={(e) => handleCambioTramo(idx, 'descuentoPct', e.target.value)}
-                        aria-invalid={Boolean(fieldErrors[`tramos.${idx}.descuentoPct`])}
-                      />
-                      <FormFieldError error={fieldErrors[`tramos.${idx}.descuentoPct`]} />
-                    </div>
+              {tipo === 'ESCALONADO' && (
+                <div className="tramos-editor">
+                  <div className="lines-header">
+                    <span>
+                      Defina los tramos de cantidad mínima del SKU y su Descuento (%):
+                    </span>
                     <button
                       type="button"
-                      className="btn btn-danger-outline btn-sm"
-                      onClick={() => handleEliminarTramo(idx)}
-                      disabled={tramos.length <= 1}
+                      className="btn btn-outline btn-sm"
+                      onClick={handleAgregarTramo}
                     >
-                      Quitar
+                      + Agregar tramo
                     </button>
                   </div>
-                ))}
-              </div>
-            )}
 
-            {tipo === 'DOS_POR_UNO' && (
-              <p className="field-hint">
-                En <strong>DOS_POR_UNO (2×1)</strong>, por cada par de unidades elegibles del SKU seleccionado, 1 unidad es gratuita (tomando las unidades de menor precio unitario).
-              </p>
-            )}
+                  <FormFieldError error={fieldErrors.tramos} />
+
+                  {tramos.map((tramo, idx) => (
+                    <div className="tramo-row" key={idx}>
+                      <div className="form-group">
+                        <label htmlFor={`tramo-cant-${idx}`}>
+                          Cantidad mínima (Tramo #{idx + 1})
+                        </label>
+                        <input
+                          id={`tramo-cant-${idx}`}
+                          type="number"
+                          min={1}
+                          value={tramo.cantidadMinima}
+                          onChange={(e) =>
+                            handleCambioTramo(idx, 'cantidadMinima', e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor={`tramo-tasa-${idx}`}>
+                          Descuento (%)
+                        </label>
+                        <input
+                          id={`tramo-tasa-${idx}`}
+                          type="text"
+                          inputMode="decimal"
+                          placeholder="Ej. 8 o 12,5"
+                          value={tramo.descuentoPct}
+                          onChange={(e) => handleCambioTramo(idx, 'descuentoPct', e.target.value)}
+                          aria-invalid={Boolean(fieldErrors[`tramos.${idx}.descuentoPct`])}
+                        />
+                        <FormFieldError error={fieldErrors[`tramos.${idx}.descuentoPct`]} />
+                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-danger-outline btn-sm"
+                        onClick={() => handleEliminarTramo(idx)}
+                        disabled={tramos.length <= 1}
+                      >
+                        Quitar
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {tipo === 'DOS_POR_UNO' && (
+                <p className="field-hint">
+                  En <strong>DOS_POR_UNO (2×1)</strong>, por cada par de unidades elegibles del SKU seleccionado, 1 unidad es gratuita (tomando las unidades de menor precio unitario).
+                </p>
+              )}
+            </div>
           </div>
 
-          <div className="form-grid-4">
-            <div className="form-group">
-              <label htmlFor="promo-articulo">
-                Artículo / SKU {requiereSku ? '(Obligatorio para este tipo)' : '(Opcional)'}
-              </label>
-              <select
-                id="promo-articulo"
-                value={articuloId}
-                onChange={(e) => setArticuloId(e.target.value)}
-                aria-invalid={Boolean(fieldErrors.articuloId || fieldErrors.sku)}
-              >
-                <option value="">
-                  {requiereSku ? 'Seleccione un SKU obligatorio...' : 'Todos los artículos'}
-                </option>
-                {articulos.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.sku} — {a.nombre}
+          {/* 4. Condiciones de aplicación */}
+          <div className="form-section-group">
+            <h3 className="form-group-title">4. Condiciones de aplicación</h3>
+            <div className="form-grid-4">
+              <div className="form-group">
+                <label htmlFor="promo-articulo">
+                  Artículo / SKU {requiereSku ? '(Obligatorio para este tipo)' : '(Opcional)'}
+                </label>
+                <select
+                  id="promo-articulo"
+                  value={articuloId}
+                  onChange={(e) => setArticuloId(e.target.value)}
+                  aria-invalid={Boolean(fieldErrors.articuloId || fieldErrors.sku)}
+                >
+                  <option value="">
+                    {requiereSku ? 'Seleccione un SKU obligatorio...' : 'Todos los artículos'}
                   </option>
-                ))}
-              </select>
-              <FormFieldError error={fieldErrors.articuloId || fieldErrors.sku} />
-            </div>
+                  {articulos.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.sku} — {a.nombre}
+                    </option>
+                  ))}
+                </select>
+                <FormFieldError error={fieldErrors.articuloId || fieldErrors.sku} />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="promo-categoria">Categoría (Opcional)</label>
-              <select
-                id="promo-categoria"
-                value={categoriaId}
-                onChange={(e) => setCategoriaId(e.target.value)}
-                aria-invalid={Boolean(fieldErrors.categoriaId)}
-              >
-                <option value="">Todas las categorías</option>
-                {categorias.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nombre} ({c.codigo})
-                  </option>
-                ))}
-              </select>
-              <FormFieldError error={fieldErrors.categoriaId} />
-            </div>
+              <div className="form-group">
+                <label htmlFor="promo-categoria">Categoría (Opcional)</label>
+                <select
+                  id="promo-categoria"
+                  value={categoriaId}
+                  onChange={(e) => setCategoriaId(e.target.value)}
+                  aria-invalid={Boolean(fieldErrors.categoriaId)}
+                >
+                  <option value="">Todas las categorías</option>
+                  {categorias.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nombre} ({c.codigo})
+                    </option>
+                  ))}
+                </select>
+                <FormFieldError error={fieldErrors.categoriaId} />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="promo-monto-minimo">Subtotal mínimo de OC (CRC)</label>
-              <input
-                id="promo-monto-minimo"
-                type="number"
-                min={0}
-                value={montoMinimo}
-                onChange={(e) => setMontoMinimo(e.target.value)}
-                aria-invalid={Boolean(fieldErrors.montoMinimo)}
-              />
-              <FormFieldError error={fieldErrors.montoMinimo} />
-            </div>
+              <div className="form-group">
+                <label htmlFor="promo-monto-minimo">Subtotal mínimo de OC (CRC)</label>
+                <input
+                  id="promo-monto-minimo"
+                  type="number"
+                  min={0}
+                  value={montoMinimo}
+                  onChange={(e) => setMontoMinimo(e.target.value)}
+                  aria-invalid={Boolean(fieldErrors.montoMinimo)}
+                />
+                <FormFieldError error={fieldErrors.montoMinimo} />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="promo-prioridad">Prioridad (desempate)</label>
-              <input
-                id="promo-prioridad"
-                type="number"
-                min={1}
-                value={prioridad}
-                onChange={(e) => setPrioridad(e.target.value)}
-                aria-invalid={Boolean(fieldErrors.prioridad)}
-              />
-              <FormFieldError error={fieldErrors.prioridad} />
+              <div className="form-group">
+                <label htmlFor="promo-prioridad">Prioridad (desempate)</label>
+                <input
+                  id="promo-prioridad"
+                  type="number"
+                  min={1}
+                  value={prioridad}
+                  onChange={(e) => setPrioridad(e.target.value)}
+                  aria-invalid={Boolean(fieldErrors.prioridad)}
+                />
+                <FormFieldError error={fieldErrors.prioridad} />
+              </div>
             </div>
           </div>
 
@@ -527,7 +543,7 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
       </section>
 
       <section className="panel" aria-labelledby="titulo-lista-promociones">
-        <div className="panel-header">
+        <div className="panel-header view-title-anim">
           <div>
             <h2 id="titulo-lista-promociones">Promociones Registradas por Proveedor</h2>
             <p className="panel-subtitle">

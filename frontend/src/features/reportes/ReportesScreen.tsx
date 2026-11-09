@@ -66,7 +66,7 @@ export const ReportesScreen: React.FC = () => {
   return (
     <div className="screen-stack">
       <section className="panel" aria-labelledby="titulo-reporte-ahorros">
-        <div className="panel-header">
+        <div className="panel-header view-title-anim">
           <div>
             <h2 id="titulo-reporte-ahorros">1. Ahorro Aplicado por Proveedor y Mes</h2>
             <p className="panel-subtitle">
@@ -114,7 +114,7 @@ export const ReportesScreen: React.FC = () => {
             description="Cuando registre órdenes de compra en ese mes, verá aquí el ahorro consolidado por proveedor."
           />
         ) : (
-          <>
+          <div className="fade-in-report" key={mesAhorro}>
             <div className="summary-banner" data-testid="resumen-ahorro-mes">
               <span>Ahorro total acumulado en {mesAhorro}:</span>
               <strong>{formatCRC(totalAhorroMes)}</strong>
@@ -152,12 +152,12 @@ export const ReportesScreen: React.FC = () => {
                 </tbody>
               </table>
             </div>
-          </>
+          </div>
         )}
       </section>
 
       <section className="panel" aria-labelledby="titulo-reporte-sin-uso">
-        <div className="panel-header">
+        <div className="panel-header view-title-anim">
           <div>
             <h2 id="titulo-reporte-sin-uso">
               2. Promociones Vigentes sin Uso a una Fecha Seleccionada
@@ -207,41 +207,43 @@ export const ReportesScreen: React.FC = () => {
             description="Todas las promociones vigentes en esa fecha ya fueron utilizadas o no existen promociones activas para ese día."
           />
         ) : (
-          <div className="table-responsive">
-            <table className="data-table" data-testid="tabla-reporte-sin-uso">
-              <thead>
-                <tr>
-                  <th>Código</th>
-                  <th>Proveedor</th>
-                  <th>Tipo</th>
-                  <th>Beneficio</th>
-                  <th>Vigencia</th>
-                  <th>Condiciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {promosSinUso.map((promo) => (
-                  <tr key={promo.id} data-testid={`sin-uso-row-${promo.codigo}`}>
-                    <td>
-                      <code>{promo.codigo}</code>
-                      <div className="cell-sub">{promo.nombre}</div>
-                    </td>
-                    <td>{promo.proveedorNombre}</td>
-                    <td>
-                      <span className="badge badge-neutral">{promo.tipo}</span>
-                    </td>
-                    <td>{describirBeneficioPromocion(promo)}</td>
-                    <td>
-                      {promo.fechaInicio} al {promo.fechaFin}
-                    </td>
-                    <td>
-                      Mínimo OC: {formatCRC(promo.montoMinimo)}
-                      {promo.sku ? ` · SKU: ${promo.sku}` : ''}
-                    </td>
+          <div className="fade-in-report" key={fechaSinUso}>
+            <div className="table-responsive">
+              <table className="data-table" data-testid="tabla-reporte-sin-uso">
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th>Proveedor</th>
+                    <th>Tipo</th>
+                    <th>Beneficio</th>
+                    <th>Vigencia</th>
+                    <th>Condiciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {promosSinUso.map((promo) => (
+                    <tr key={promo.id} data-testid={`sin-uso-row-${promo.codigo}`}>
+                      <td>
+                        <code>{promo.codigo}</code>
+                        <div className="cell-sub">{promo.nombre}</div>
+                      </td>
+                      <td>{promo.proveedorNombre}</td>
+                      <td>
+                        <span className="badge badge-neutral">{promo.tipo}</span>
+                      </td>
+                      <td>{describirBeneficioPromocion(promo)}</td>
+                      <td>
+                        {promo.fechaInicio} al {promo.fechaFin}
+                      </td>
+                      <td>
+                        Mínimo OC: {formatCRC(promo.montoMinimo)}
+                        {promo.sku ? ` · SKU: ${promo.sku}` : ''}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </section>
