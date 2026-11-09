@@ -32,10 +32,21 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
   onOrdenCreated,
   onOpenAuditoria
 }) => {
+  const calcularNumeroSugerido = (listaOrdenes: OrdenResumen[]) => {
+    const numerosExistentes = new Set(listaOrdenes.map((o) => o.numeroOc));
+    let sugerido = 'OC-2026-001';
+    let contador = 2;
+    while (numerosExistentes.has(sugerido)) {
+      sugerido = `OC-2026-${String(contador).padStart(3, '0')}`;
+      contador += 1;
+    }
+    return sugerido;
+  };
+
   const defaultProveedorId = proveedores[0]?.id ? String(proveedores[0].id) : '';
   const defaultArticulo = articulos[0];
 
-  const [numeroOc, setNumeroOc] = useState('OC-2026-001');
+  const [numeroOc, setNumeroOc] = useState(() => calcularNumeroSugerido(ordenes));
   const [fechaOc, setFechaOc] = useState('2026-10-15');
   const [proveedorId, setProveedorId] = useState(defaultProveedorId);
   const [lineas, setLineas] = useState<LineaFormState[]>([
@@ -70,15 +81,8 @@ export const OrdenesScreen: React.FC<OrdenesScreenProps> = ({
     const cemGris =
       articulos.find((a) => a.sku === 'CEM-GRIS-50') ?? articulos[0];
 
-    // Sugerir OC-2026-001 si está libre; si ya fue usada, sugerir correlativo libre
-    const numerosExistentes = new Set(ordenes.map((o) => o.numeroOc));
-    let sugerido = 'OC-2026-001';
-    let contador = 2;
-    while (numerosExistentes.has(sugerido)) {
-      sugerido = `OC-2026-${String(contador).padStart(3, '0')}`;
-      contador += 1;
-    }
-
+    // Sugerir número de OC disponible
+    const sugerido = calcularNumeroSugerido(ordenes);
     setNumeroOc(sugerido);
     setFechaOc('2026-10-15');
     if (provA) setProveedorId(String(provA.id));

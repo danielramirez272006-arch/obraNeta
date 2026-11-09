@@ -6,6 +6,7 @@ import { EmptyState } from '../../components/EmptyState';
 import {
   etiquetaMotivoEvaluacion,
   etiquetaTipoPromocion,
+  formatCantidadUnidad,
   formatCRC
 } from '../../components/formatters';
 
@@ -173,7 +174,7 @@ export const AuditoriaView: React.FC<AuditoriaViewProps> = ({
                         <td>{linea.articuloNombre}</td>
                         <td>{linea.categoriaNombre}</td>
                         <td className="num">
-                          {linea.cantidad} {linea.unidad}
+                          {formatCantidadUnidad(linea.cantidad, linea.unidad)}
                         </td>
                         <td className="num">{formatCRC(linea.precioUnitario)}</td>
                         <td className="num">

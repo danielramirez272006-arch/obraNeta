@@ -16,10 +16,54 @@ export function formatCRC(amount: number | null | undefined): string {
   return rounded < 0 ? `-₡${absStr}` : `₡${absStr}`;
 }
 
+/**
+ * Muestra las tasas de puntos básicos exclusivamente como porcentajes para el usuario.
+ * Acepta decimales hasta 2 cifras (ej. 500 bps -> "5 %", 525 bps -> "5,25 %" o "5.25 %").
+ */
 export function formatPorcentajeBps(bps: number | null | undefined): string {
   if (bps === null || bps === undefined) return '—';
   const pct = bps / 100;
-  return `${Number.isInteger(pct) ? pct : pct.toFixed(2)} % (${bps} bps)`;
+  const formatted = Number.isInteger(pct) ? String(pct) : pct.toFixed(2).replace(/\.?0+$/, '');
+  return `${formatted} %`;
+}
+
+/**
+ * Formatea una cantidad con su unidad en singular o plural.
+ * - saco / sacos
+ * - varilla / varillas
+ * - unidad / unidades
+ * - Símbolos y abreviaturas invariables como kg, m³, m, cm, pulg se conservan sin pluralizar.
+ */
+export function formatCantidadUnidad(cantidad: number, unidadRaw?: string): string {
+  const unidad = (unidadRaw || 'unidad').trim();
+  const esPlural = cantidad !== 1 && cantidad !== -1;
+
+  if (!esPlural) {
+    return `${cantidad} ${unidad}`;
+  }
+
+  const uLower = unidad.toLowerCase();
+
+  // Abreviaturas y símbolos invariables
+  const invariables = new Set(['kg', 'g', 'mg', 'm³', 'm3', 'm²', 'm2', 'm', 'cm', 'mm', 'pulg', 'in', 'l', 'ml']);
+  if (invariables.has(uLower)) {
+    return `${cantidad} ${unidad}`;
+  }
+
+  // Reglas de pluralización en español
+  if (uLower === 'saco') return `${cantidad} sacos`;
+  if (uLower === 'varilla') return `${cantidad} varillas`;
+  if (uLower === 'unidad') return `${cantidad} unidades`;
+  if (uLower === 'bloque') return `${cantidad} bloques`;
+  if (uLower === 'caja') return `${cantidad} cajas`;
+  if (uLower === 'paquete') return `${cantidad} paquetes`;
+  if (uLower === 'metro') return `${cantidad} metros`;
+
+  if (/[aeiouáéíóú]$/i.test(unidad)) {
+    return `${cantidad} ${unidad}s`;
+  }
+
+  return `${cantidad} ${unidad}es`;
 }
 
 export function etiquetaTipoPromocion(tipo: TipoPromocion): string {
@@ -47,7 +91,10 @@ export function describirBeneficioPromocion(promo: Pick<Promocion, 'tipo' | 'tas
   if (promo.tipo === 'ESCALONADO') {
     if (!promo.tramos || promo.tramos.length === 0) return 'Tramos por volumen';
     return promo.tramos
-      .map((t) => `≥ ${t.cantidadMinima} uds: ${t.tasaBps / 100}%`)
+      .map((t) => {
+        const cant = formatCantidadUnidad(t.cantidadMinima, 'unidad');
+        return `≥ ${cant}: ${formatPorcentajeBps(t.tasaBps)}`;
+      })
       .join(' · ');
   }
   if (promo.tipo === 'DOS_POR_UNO') {
@@ -80,4 +127,3 @@ export function etiquetaMotivoEvaluacion(motivo: MotivoEvaluacion): string {
       return motivo;
   }
 }
-

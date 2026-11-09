@@ -18,7 +18,43 @@ import {
 
 interface TramoInputState {
   cantidadMinima: string;
-  tasaBps: string;
+  descuentoPct: string;
+}
+
+export function parsePorcentajeToBps(val: string): { bps: number | null; error: string | null } {
+  const trimmed = val.trim();
+  if (!trimmed) {
+    return { bps: null, error: 'El porcentaje de descuento es obligatorio.' };
+  }
+
+  // Normalizar coma a punto
+  const normalized = trimmed.replace(',', '.');
+
+  // Validar formato numérico con máximo 2 decimales
+  if (!/^\d+(\.\d{1,2})?$/.test(normalized)) {
+    if (/^\d+\.\d{3,}$/.test(normalized)) {
+      return { bps: null, error: 'Solo se permiten hasta dos decimales sin redondear.' };
+    }
+    return { bps: null, error: 'Ingrese un porcentaje válido con punto o coma (ej. 5 o 5,25).' };
+  }
+
+  const num = Number(normalized);
+  if (num <= 0 || num > 100) {
+    return { bps: null, error: 'El porcentaje debe ser mayor a 0 y menor o igual a 100.' };
+  }
+
+  // Convertir a bps sin pérdida de precisión de coma flotante
+  const parts = normalized.split('.');
+  const enteros = parseInt(parts[0], 10);
+  const decimalesStr = (parts[1] || '').padEnd(2, '0');
+  const decimales = parseInt(decimalesStr, 10);
+  const bps = enteros * 100 + decimales;
+
+  if (bps < 1 || bps > 10000) {
+    return { bps: null, error: 'La tasa calculada debe estar entre 1 y 10000 puntos básicos (0.01% a 100%).' };
+  }
+
+  return { bps, error: null };
 }
 
 interface PromocionesScreenProps {
@@ -43,7 +79,7 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
   const [codigo, setCodigo] = useState('');
   const [nombre, setNombre] = useState('');
   const [tipo, setTipo] = useState<TipoPromocion>('PORCENTAJE');
-  const [tasaBps, setTasaBps] = useState('500');
+  const [descuentoPct, setDescuentoPct] = useState('5');
   const [montoFijo, setMontoFijo] = useState('25000');
   const [fechaInicio, setFechaInicio] = useState('2026-10-01');
   const [fechaFin, setFechaFin] = useState('2026-10-31');
@@ -52,8 +88,8 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
   const [categoriaId, setCategoriaId] = useState('');
   const [articuloId, setArticuloId] = useState('');
   const [tramos, setTramos] = useState<TramoInputState[]>([
-    { cantidadMinima: '50', tasaBps: '500' },
-    { cantidadMinima: '100', tasaBps: '1000' }
+    { cantidadMinima: '50', descuentoPct: '5' },
+    { cantidadMinima: '100', descuentoPct: '10' }
   ]);
 
   const [submitting, setSubmitting] = useState(false);
@@ -81,7 +117,7 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
   }, [filtroProveedorId]);
 
   const handleAgregarTramo = () => {
-    setTramos((prev) => [...prev, { cantidadMinima: '', tasaBps: '' }]);
+    setTramos((prev) => [...prev, { cantidadMinima: '', descuentoPct: '' }]);
   };
 
   const handleEliminarTramo = (idx: number) => {
@@ -91,7 +127,7 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
 
   const handleCambioTramo = (
     idx: number,
-    campo: 'cantidadMinima' | 'tasaBps',
+    campo: 'cantidadMinima' | 'descuentoPct',
     valor: string
   ) => {
     setTramos((prev) =>
@@ -108,13 +144,51 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
     setBannerError(null);
     setSuccessMsg(null);
 
+    const erroresLocales: Record<string, string> = {};
+
+    let tasaBpsCalculada: number | null = null;
+    if (tipo === 'PORCENTAJE') {
+      const parsed = parsePorcentajeToBps(descuentoPct);
+      if (parsed.error) {
+        erroresLocales.descuentoPct = parsed.error;
+        erroresLocales.tasaBps = parsed.error;
+      } else {
+        tasaBpsCalculada = parsed.bps;
+      }
+    }
+
+    let tramosCalculados: Array<{ cantidadMinima: number; tasaBps: number }> | undefined = undefined;
+    if (tipo === 'ESCALONADO') {
+      tramosCalculados = [];
+      tramos.forEach((tr, i) => {
+        const parsed = parsePorcentajeToBps(tr.descuentoPct);
+        if (parsed.error) {
+          erroresLocales[`tramos.${i}.descuentoPct`] = `Tramo #${i + 1}: ${parsed.error}`;
+          if (!erroresLocales.tramos) {
+            erroresLocales.tramos = `Tramo #${i + 1}: ${parsed.error}`;
+          }
+        } else if (parsed.bps !== null) {
+          tramosCalculados!.push({
+            cantidadMinima: Number(tr.cantidadMinima),
+            tasaBps: parsed.bps
+          });
+        }
+      });
+    }
+
+    if (Object.keys(erroresLocales).length > 0) {
+      setFieldErrors(erroresLocales);
+      setSubmitting(false);
+      return;
+    }
+
     try {
       const creada = await apiClient.crearPromocion({
         proveedorId: Number(proveedorId),
         codigo: codigo.trim(),
         nombre: nombre.trim(),
         tipo,
-        tasaBps: tipo === 'PORCENTAJE' ? Number(tasaBps) : null,
+        tasaBps: tasaBpsCalculada,
         montoFijo: tipo === 'MONTO_FIJO' ? Number(montoFijo) : null,
         fechaInicio,
         fechaFin,
@@ -122,13 +196,7 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
         montoMinimo: Number(montoMinimo || 0),
         categoriaId: categoriaId ? Number(categoriaId) : null,
         articuloId: articuloId ? Number(articuloId) : null,
-        tramos:
-          tipo === 'ESCALONADO'
-            ? tramos.map((t) => ({
-                cantidadMinima: Number(t.cantidadMinima),
-                tasaBps: Number(t.tasaBps)
-              }))
-            : undefined
+        tramos: tramosCalculados
       });
 
       setSuccessMsg(`Promoción "${creada.codigo}" creada correctamente.`);
@@ -274,22 +342,20 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
 
             {tipo === 'PORCENTAJE' && (
               <div className="form-group">
-                <label htmlFor="promo-tasa-bps">
-                  Tasa de descuento en puntos básicos (100 bps = 1%, 500 bps = 5%)
-                </label>
+                <label htmlFor="promo-descuento-pct">Descuento (%)</label>
                 <input
-                  id="promo-tasa-bps"
-                  type="number"
-                  min={1}
-                  max={10000}
-                  value={tasaBps}
-                  onChange={(e) => setTasaBps(e.target.value)}
-                  aria-invalid={Boolean(fieldErrors.tasaBps)}
+                  id="promo-descuento-pct"
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="Ej. 5 o 5,25"
+                  value={descuentoPct}
+                  onChange={(e) => setDescuentoPct(e.target.value)}
+                  aria-invalid={Boolean(fieldErrors.descuentoPct || fieldErrors.tasaBps)}
                 />
                 <span className="field-hint">
-                  Equivale a: {Number(tasaBps) > 0 ? `${(Number(tasaBps) / 100).toFixed(2)}%` : '0%'}
+                  Acepta hasta 2 decimales con punto o coma (ej. 5 % = 500 bps, 5,25 % = 525 bps).
                 </span>
-                <FormFieldError error={fieldErrors.tasaBps} />
+                <FormFieldError error={fieldErrors.descuentoPct || fieldErrors.tasaBps} />
               </div>
             )}
 
@@ -315,7 +381,7 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
               <div className="tramos-editor">
                 <div className="lines-header">
                   <span>
-                    Defina los tramos de cantidad mínima del SKU y su tasa en puntos básicos:
+                    Defina los tramos de cantidad mínima del SKU y su Descuento (%):
                   </span>
                   <button
                     type="button"
@@ -346,16 +412,18 @@ export const PromocionesScreen: React.FC<PromocionesScreenProps> = ({
                     </div>
                     <div className="form-group">
                       <label htmlFor={`tramo-tasa-${idx}`}>
-                        Tasa en puntos básicos (bps)
+                        Descuento (%)
                       </label>
                       <input
                         id={`tramo-tasa-${idx}`}
-                        type="number"
-                        min={1}
-                        max={10000}
-                        value={tramo.tasaBps}
-                        onChange={(e) => handleCambioTramo(idx, 'tasaBps', e.target.value)}
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="Ej. 8 o 12,5"
+                        value={tramo.descuentoPct}
+                        onChange={(e) => handleCambioTramo(idx, 'descuentoPct', e.target.value)}
+                        aria-invalid={Boolean(fieldErrors[`tramos.${idx}.descuentoPct`])}
                       />
+                      <FormFieldError error={fieldErrors[`tramos.${idx}.descuentoPct`]} />
                     </div>
                     <button
                       type="button"
