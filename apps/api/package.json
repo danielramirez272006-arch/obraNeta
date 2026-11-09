@@ -1,0 +1,19 @@
+{
+  "name": "@obraneta/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "build": "node -e \"console.log('API lista (Node.js 24 ESM nativo)')\"",
+    "test": "node --test tests/*.test.js",
+    "db:init": "node src/db/cli.js init",
+    "db:seed": "node src/db/cli.js seed"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mysql2": "^3.24.6"
+  }
+}
